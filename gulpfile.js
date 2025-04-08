@@ -105,6 +105,27 @@ let serve = () => {
         .on(`change`, reload);
 };
 
+async function clean() {
+    const { deleteAsync } = await import(`del`);
+    let fs = require(`fs`),
+        foldersToDelete = [`./temp`, `prod`];
+
+    for (let folder of foldersToDelete) {
+        try {
+            fs.accessSync(folder, fs.F_OK);
+            process.stdout.write(`\n\tThe ${folder} directory was found and will be deleted.\n`);
+        } catch (e) {
+            process.stdout.write(`\n\tThe ${folder} directory does NOT exist or is NOT accessible.\n`);
+            continue;
+        }
+
+        await deleteAsync(folder);
+    }
+
+    process.stdout.write(`\n`);
+}
+
+
 
 exports.compressHTML = compressHTML;
 exports.validateHTML = validateHTML;
@@ -115,3 +136,4 @@ exports.transpileJSForProd = transpileJSForProd;
 exports.lintJS = lintJS;
 exports.copyUnprocessedAssetsForProd = copyUnprocessedAssetsForProd;
 exports.serve = serve;
+exports.clean = clean;
