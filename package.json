@@ -9,11 +9,14 @@
   "author": "Nicholas Brown",
   "license": "ISC",
   "devDependencies": {
+    "@babel/preset-env": "^7.26.9",
     "gulp": "^5.0.0",
+    "gulp-babel": "^8.0.0",
     "gulp-csso": "^4.0.1",
     "gulp-html": "^6.1.0",
     "gulp-htmlmin": "^5.0.1",
-    "gulp-stylelint": "^13.0.0"
+    "gulp-stylelint": "^13.0.0",
+    "gulp-uglify": "^3.0.2"
   },
   "dependencies": {
     "gulp-cli": "^3.0.0"
