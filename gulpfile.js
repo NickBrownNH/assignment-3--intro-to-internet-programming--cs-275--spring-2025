@@ -137,3 +137,11 @@ exports.lintJS = lintJS;
 exports.copyUnprocessedAssetsForProd = copyUnprocessedAssetsForProd;
 exports.serve = serve;
 exports.clean = clean;
+exports.build = series(
+    clean,
+    compressHTML,
+    compressCSS,
+    transpileJSForProd,
+    copyUnprocessedAssetsForProd
+);
+exports.default = serve;
