@@ -52,6 +52,27 @@ let transpileJSForProd = () => {
         .pipe(dest(`prod/js`));
 };
 
+let copyUnprocessedAssetsForProd = () => {
+    return src([
+        `*.*`,
+        `**`,
+        `!prod/**`,
+        `!prod`,
+        `!README.md`,
+        `!gulpfile.js`,
+        `!package-lock.json`,
+        `!package.json`,
+        `!node_modules/`,
+        `!node_modules/**`,
+        `!scripts/**/*.js`,
+        `!scripts/*.js`,
+        `!styles/`,
+        `!styles/**/*`,
+        `!*.html`
+    ], { dot: true })
+        .pipe(dest(`prod`));
+};
+
 
 exports.compressHTML = compressHTML;
 exports.validateHTML = validateHTML;
@@ -59,3 +80,4 @@ exports.compressCSS = compressCSS;
 exports.lintCSS = lintCSS;
 exports.transpileJS = transpileJS;
 exports.transpileJSForProd = transpileJSForProd;
+exports.copyUnprocessedAssetsForProd = copyUnprocessedAssetsForProd;
