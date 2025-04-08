@@ -1,10 +1,13 @@
-const { src, dest, series, watch } = require('gulp'),
-    htmlCompressor = require('gulp-htmlmin'),
-    htmlValidator = require('gulp-html'),
-    cssCompressor = require('gulp-csso'),
-    cssValidator = require('gulp-stylelint'),
-    babel = require('gulp-babel'),
-    jsCompressor = require('gulp-uglify');
+const { src, dest, series, watch } = require(`gulp`),
+    htmlCompressor = require(`gulp-htmlmin`),
+    htmlValidator = require(`gulp-html`),
+    cssCompressor = require(`gulp-csso`),
+    cssValidator = require(`gulp-stylelint`),
+    jsLinter = require(`gulp-eslint`),
+    babel = require(`gulp-babel`),
+    jsCompressor = require(`gulp-uglify`),
+    browserSync = require(`browser-sync`),
+    reload = browserSync.reload;
 
 let compressHTML = () => {
     return src(`*.html`)
@@ -31,6 +34,12 @@ let lintCSS = () => {
                 { formatter: `string`, console: true }
             ]
         }));
+};
+
+let lintJS = () => {
+    return src(`scripts/*.js`)
+        .pipe(jsLinter())
+        .pipe(jsLinter.formatEach(`compact`));
 };
 
 let transpileJS = () => {
@@ -73,6 +82,29 @@ let copyUnprocessedAssetsForProd = () => {
         .pipe(dest(`prod`));
 };
 
+let serve = () => {
+    browserSync({
+        notify: true,
+        reloadDelay: 50,
+        browser: `default`,
+        server: {
+            baseDir: [
+                `temp`,
+                `./`
+            ]
+        }
+    });
+
+    watch(`scripts/*.js`, series(lintJS, transpileJS))
+        .on(`change`, reload);
+
+    watch(`styles/**/*.css`, lintCSS)
+        .on(`change`, reload);
+
+    watch(`*.html`, validateHTML)
+        .on(`change`, reload);
+};
+
 
 exports.compressHTML = compressHTML;
 exports.validateHTML = validateHTML;
@@ -80,4 +112,6 @@ exports.compressCSS = compressCSS;
 exports.lintCSS = lintCSS;
 exports.transpileJS = transpileJS;
 exports.transpileJSForProd = transpileJSForProd;
+exports.lintJS = lintJS;
 exports.copyUnprocessedAssetsForProd = copyUnprocessedAssetsForProd;
+exports.serve = serve;
