@@ -1,7 +1,7 @@
 const { src, dest, series, watch } = require(`gulp`),
     htmlCompressor = require(`gulp-htmlmin`),
     htmlValidator = require(`gulp-html`),
-    cssCompressor = require(`gulp-csso`),
+    cssCompressor = require(`gulp-clean-css`),
     cssValidator = require(`gulp-stylelint`),
     jsLinter = require(`gulp-eslint`),
     babel = require(`gulp-babel`),
@@ -21,8 +21,13 @@ let validateHTML = () => {
 };
 
 let compressCSS = () => {
-    return src(`./styles/**/*.css`)
-        .pipe(cssCompressor())
+    return src(`styles/*.css`)
+        .pipe(cssCompressor({
+            compatibility: `ie8`,
+            keepSpecialComments : 0,
+            target: `Resources`,
+            relativeTo: ``
+        }))
         .pipe(dest(`prod/styles`));
 };
 
@@ -48,9 +53,9 @@ let transpileJS = () => {
         .on(`error`, (err) => {
             console.error(`Babel error:`, err);
         })
-        .pipe(dest(`./temp/js`))
+        .pipe(dest(`./temp/scripts`))
         .on(`end`, () => {
-            console.log(`Transpilation complete. Files saved to ./temp/js`);
+            console.log(`Transpilation complete. Files saved to ./temp/scripts`);
         });
 };
 
@@ -58,7 +63,7 @@ let transpileJSForProd = () => {
     return src(`scripts/*.js`)
         .pipe(babel())
         .pipe(jsCompressor())
-        .pipe(dest(`prod/js`));
+        .pipe(dest(`prod/scripts`));
 };
 
 let copyUnprocessedAssetsForProd = () => {
@@ -75,9 +80,15 @@ let copyUnprocessedAssetsForProd = () => {
         `!node_modules/**`,
         `!scripts/**/*.js`,
         `!scripts/*.js`,
+        `!scripts/.gitignore`,
         `!styles/`,
         `!styles/**/*`,
-        `!*.html`
+        `!*.html`,
+        `!.babelrc`,
+        `!.editorconfig`,
+        `!.gitignore`,
+        `!.stylelintrc.json`,
+        `!.eslintrc`
     ], { dot: true })
         .pipe(dest(`prod`));
 };
